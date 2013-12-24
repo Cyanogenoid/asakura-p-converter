@@ -39,7 +39,7 @@ def load_map(fd):
         for column in range(77):
             tile_appearance, tile_property = read_ints(fd, 2)
             tiles[row, column] = tile_appearance, tile_property
-        skip_bytes(fd, 8) # skip padding column
+        skip_bytes(fd, byte_count=8) # skip padding column
 
     skip_bytes(fd, byte_count=1024)
 
@@ -97,7 +97,7 @@ def load_map(fd):
         door_id, target_door = read_ints(fd, byte_count=2)
         doors[i] = door_id, target_door
 
-    skip_bytes(fd, 4)
+    skip_bytes(fd, byte_count=4)
 
     time, = read_ints(fd, byte_count=1)
 
