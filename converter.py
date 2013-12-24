@@ -79,7 +79,7 @@ def load_map(fd):
     moving_tiles_count, = read_ints(fd, byte_count = 1)
     for _ in range(moving_tiles_count):
         moving_row, moving_column, moving_id = read_ints(fd, byte_count = 3)
-        moving_tiles[moving_column, moving_rowl] = moving_id
+        moving_tiles[moving_column, moving_row] = moving_id
 
     # jump reduction
     jump_reduction, = read_ints(fd, byte_count = 1)
