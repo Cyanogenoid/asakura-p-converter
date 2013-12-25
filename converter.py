@@ -21,7 +21,7 @@ def read_string(fd, length):
 def skip_bytes(fd, words):
     fd.seek(int(words * 4), 1)
 
-def load_map(fd):
+def parse_askm(fd):
     skip_bytes(fd, words=1)
 
     tileset_length, = read_ints(fd, words=1)
