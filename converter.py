@@ -14,7 +14,7 @@ def read_ints(fd, words):
     return [int(i) for i in byte_pack]
 
 def read_string(fd, length):
-    return fd.read(length)
+    return fd.read(length).decode('utf-8')
 
 def skip_bytes(fd, words):
     fd.seek(int(words * 4), 1)
