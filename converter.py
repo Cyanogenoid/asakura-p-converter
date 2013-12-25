@@ -142,3 +142,8 @@ def askm_to_tmx(askm):
     }
 
     return tmx
+
+arg = sys.argv[1]
+askm = load_askm(arg)
+tmx = askm_to_tmx(askm)
+print(tmx.dump().decode('utf-8'))
