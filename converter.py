@@ -21,6 +21,10 @@ def read_string(fd, length):
 def skip_bytes(fd, words):
     fd.seek(int(words * 4), 1)
 
+def load_askm(path):
+    with open(path, 'rb') as f:
+        return parse_askm(f)
+
 def parse_askm(fd):
     skip_bytes(fd, words=1)
 
