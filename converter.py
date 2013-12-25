@@ -10,7 +10,8 @@ Asakura_Map = namedtuple('Map',
               )
 
 def read_ints(fd, words):
-    return struct.unpack('i' * words, fd.read(int(4 * words)))
+    byte_pack = struct.unpack('i' * words, fd.read(4 * words))
+    return [int(i) for i in byte_pack]
 
 def read_string(fd, length):
     return fd.read(length)
