@@ -2,6 +2,8 @@ import sys
 import struct
 from collections import namedtuple
 
+import tmxlib
+
 Asakura_Map = namedtuple('Map',
                   ['tileset_name', 'background_name', 'background_music_name',
                    'tiles', 'enemies', 'items', 'moving_tiles', 'doors',
@@ -107,3 +109,32 @@ def load_map(fd):
                        bubble_key, key, chest,
                        enemy_set, time,
                        jump_reduction, inertia)
+
+def askm_to_tmx(askm):
+    # load template tmx
+    tmx = tmxlib.Map(size=(78, 48), tile_size=(32, 32))
+
+    # load tile tileset
+    tiles_tileset_path = askm.tileset_name.replace('.png', '.tsx')
+    tiles_tileset = tmxlib.tileset.ImageTileset.open(tiles_tileset_path)
+
+    # create new tmx tileset list
+    tmx.tilesets = tmxlib.tileset.TilesetList(tmx)
+
+    # add tile tileset to tmx
+    tmx.tilesets.append(tiles_tileset)
+
+    # copy all askm tiles into a 'tiles' layer
+    tmx.add_layer('tiles')
+    tiles_layer = tmx.layers['tiles']
+    for position, tile in askm.tiles.items():
+        tile_gid = tiles_tileset[tile[0]]
+        tiles_layer[reversed(position)] = tile_gid
+
+    # set properties that can't be stored elsewhere in the map
+    tmx.properties = {
+        'jump_reduction': str(askm.jump_reduction),
+        'inertia': str(askm.inertia),
+    }
+
+    return tmx
