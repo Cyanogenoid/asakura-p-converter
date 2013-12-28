@@ -122,11 +122,16 @@ def askm_to_tmx(askm):
     tiles_tileset_path = askm.tileset_name.replace('.png', '.tsx')
     tiles_tileset = tmxlib.tileset.ImageTileset.open(tiles_tileset_path)
 
+    # load items tileset
+    items_tileset_path = 'pat_item.tsx' # TODO: Make this more sensible
+    items_tileset = tmxlib.tileset.ImageTileset.open(items_tileset_path)
+
     # create new tmx tileset list
     tmx.tilesets = tmxlib.tileset.TilesetList(tmx)
 
-    # add tile tileset to tmx
+    # add tilesets to tmx
     tmx.tilesets.append(tiles_tileset)
+    tmx.tilesets.append(items_tileset)
 
     # copy all askm tiles into a 'tiles' layer
     tmx.add_layer('tiles')
@@ -134,6 +139,15 @@ def askm_to_tmx(askm):
     for position, tile in askm.tiles.items():
         tile_gid = tiles_tileset[tile[0]]
         tiles_layer[reversed(position)] = tile_gid
+
+    # copy all askm items into a 'items' layer
+    tmx.add_layer('items')
+    items_layer = tmx.layers['items']
+    for position, item in askm.items.items():
+        # ugly hack, an item row in the tileset has 6 images in it
+        item_gid = items_tileset[item * 6]
+        # for some reason position is not reversed here?
+        tiles_layer[position] = item_gid
 
     # set properties that can't be stored elsewhere in the map
     tmx.properties = {
