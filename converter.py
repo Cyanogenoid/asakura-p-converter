@@ -1,3 +1,4 @@
+import argparse
 import sys
 import struct
 from collections import namedtuple
@@ -157,7 +158,12 @@ def askm_to_tmx(askm):
 
     return tmx
 
-arg = sys.argv[1]
-askm = load_askm(arg)
+parser = argparse.ArgumentParser(description='Convert Asakura! P .map files to '
+                                             'and from Tiled .tmx files')
+parser.add_argument('input_path', help='path where the input map is located')
+parser.add_argument('output_path', help='path where the output will be saved')
+args = parser.parse_args()
+
+askm = load_askm(args.input_path)
 tmx = askm_to_tmx(askm)
-print(tmx.dump().decode('utf-8'))
+tmx.save(args.output_path)
