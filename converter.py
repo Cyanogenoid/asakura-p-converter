@@ -147,7 +147,7 @@ def askm_to_tmx(askm):
         # ugly hack, an item row in the tileset has 6 images in it
         item_gid = items_tileset[item * 6]
         # for some reason position is not reversed here?
-        tiles_layer[position] = item_gid
+        items_layer[position] = item_gid
 
     # set properties that can't be stored elsewhere in the map
     tmx.properties = {
