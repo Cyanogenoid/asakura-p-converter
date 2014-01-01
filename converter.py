@@ -1,45 +1,48 @@
 import argparse
-import sys
 import struct
 from collections import namedtuple
 
 import tmxlib
 
-Asakura_Map = namedtuple('Map',
-                  ['tileset_name', 'background_name', 'background_music_name',
-                   'tiles', 'enemies', 'items', 'moving_tiles', 'doors',
-                   'bubble_key', 'key', 'chest', 'enemy_set', 'time',
-                   'jump_reduction', 'inertia']
-              )
+Asakura_Map = namedtuple('Map', [
+    'tileset_name', 'background_name', 'background_music_name',
+    'tiles', 'enemies', 'items', 'moving_tiles', 'doors',
+    'bubble_key', 'key', 'chest', 'enemy_set', 'time',
+    'jump_reduction', 'inertia'])
+
 
 def read_ints(fd, words):
     byte_pack = struct.unpack('i' * words, fd.read(4 * words))
     return [int(i) for i in byte_pack]
 
+
 def read_string(fd, length):
     return fd.read(length).decode('utf-8')
 
+
 def skip_bytes(fd, words):
     fd.seek(int(words * 4), 1)
+
 
 def load_askm(path):
     with open(path, 'rb') as f:
         return parse_askm(f)
 
+
 def parse_askm(fd):
     skip_bytes(fd, words=1)
 
     tileset_length, = read_ints(fd, words=1)
-    tileset_name = read_string(fd, length = tileset_length)
-    skip_bytes(fd, words=1/4) # skip null byte
+    tileset_name = read_string(fd, length=tileset_length)
+    skip_bytes(fd, words=1/4)  # skip null byte
 
     background_length, = read_ints(fd, words=1)
-    background_name = read_string(fd, length = background_length)
-    skip_bytes(fd, words=1/4) # skip null byte
+    background_name = read_string(fd, length=background_length)
+    skip_bytes(fd, words=1/4)  # skip null byte
 
     background_music_length, = read_ints(fd, words=1)
-    background_music_name = read_string(fd, length = background_music_length)
-    skip_bytes(fd, words=1/4) # skip null byte
+    background_music_name = read_string(fd, length=background_music_length)
+    skip_bytes(fd, words=1/4)  # skip null byte
 
     # tiles
     tiles = dict()
@@ -47,7 +50,7 @@ def parse_askm(fd):
         for column in range(77):
             tile_appearance, tile_property = read_ints(fd, 2)
             tiles[row, column] = tile_appearance, tile_property
-        skip_bytes(fd, words=2) # skip padding column
+        skip_bytes(fd, words=2)  # skip padding column
 
     skip_bytes(fd, words=256)
 
@@ -69,15 +72,15 @@ def parse_askm(fd):
         items[item_column, item_row] = item_id
 
     # bubble key
-    has_bubble_key = read_ints(fd, words=1)
+    skip_bytes(fd, words=1)
     bubble_key = read_ints(fd, words=3)
 
     # bubble key
-    has_key = read_ints(fd, words=1)
+    skip_bytes(fd, words=1)
     key = read_ints(fd, words=3)
 
     # chest
-    has_chest = read_ints(fd, words=1)
+    skip_bytes(fd, words=1)
     chest = read_ints(fd, words=3)
 
     skip_bytes(fd, words=8)
@@ -115,6 +118,7 @@ def parse_askm(fd):
                        enemy_set, time,
                        jump_reduction, inertia)
 
+
 def askm_to_tmx(askm):
     # load template tmx
     tmx = tmxlib.Map(size=(78, 48), tile_size=(32, 32))
@@ -124,7 +128,7 @@ def askm_to_tmx(askm):
     tiles_tileset = tmxlib.tileset.ImageTileset.open(tiles_tileset_path)
 
     # load items tileset
-    items_tileset_path = 'pat_item.tsx' # TODO: Make this more sensible
+    items_tileset_path = 'pat_item.tsx'  # TODO: Make this more sensible
     items_tileset = tmxlib.tileset.ImageTileset.open(items_tileset_path)
 
     # create new tmx tileset list
@@ -158,8 +162,8 @@ def askm_to_tmx(askm):
 
     return tmx
 
-parser = argparse.ArgumentParser(description='Convert Asakura! P .map files to '
-                                             'and from Tiled .tmx files')
+parser = argparse.ArgumentParser(description='Convert Asakura! P .map files'
+                                             'to and from Tiled .tmx files')
 parser.add_argument('input_path', help='path where the input map is located')
 parser.add_argument('output_path', help='path where the output will be saved')
 args = parser.parse_args()
