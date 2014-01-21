@@ -137,7 +137,6 @@ def askm_to_tmx(askm, resource_path=''):
     tiles_tileset_path = resource_path_gen(
                             askm.tileset_name.replace('.png', '.tsx')
                          )
-    print(tiles_tileset_path)
     tiles_tileset = tmxlib.tileset.ImageTileset.open(tiles_tileset_path)
 
     # load properties tileset
