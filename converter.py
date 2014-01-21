@@ -190,7 +190,7 @@ def askm_to_tmx(askm, resource_path=''):
     return tmx
 
 
-def make_tileset(name, tile_size=(32,32), image_path):
+def make_tileset(name, image_path, tile_size=(32,32)):
     image = tmxlib.image.open(image_path)
     tileset = tmxlib.ImageTileset(name=name, tile_size=tile_size, image=image)
 
