@@ -1,6 +1,6 @@
 import argparse
 import struct
-from collections import namedtuple
+from collections import namedtuple, defaultdict
 
 import tmxlib
 
@@ -9,6 +9,12 @@ Asakura_Map = namedtuple('Map', [
     'tiles', 'enemies', 'items', 'moving_tiles', 'doors',
     'bubble_key', 'key', 'chest', 'enemy_set', 'time',
     'jump_reduction', 'inertia'])
+
+
+property_map = defaultdict(int)
+property_map.update({
+    120: 17
+})
 
 
 def read_ints(fd, words):
@@ -127,6 +133,12 @@ def askm_to_tmx(askm):
     tiles_tileset_path = askm.tileset_name.replace('.png', '.tsx')
     tiles_tileset = tmxlib.tileset.ImageTileset.open(tiles_tileset_path)
 
+    # load properties tileset
+    properties_tileset_path = tiles_tileset_path
+    properties_tileset = tmxlib.tileset.ImageTileset.open(
+                             properties_tileset_path
+                         )
+
     # load items tileset
     items_tileset_path = 'pat_item.tsx'  # TODO: Make this more sensible
     items_tileset = tmxlib.tileset.ImageTileset.open(items_tileset_path)
@@ -136,14 +148,23 @@ def askm_to_tmx(askm):
 
     # add tilesets to tmx
     tmx.tilesets.append(tiles_tileset)
+    tmx.tilesets.append(properties_tileset)
     tmx.tilesets.append(items_tileset)
 
-    # copy all askm tiles into a 'tiles' layer
+    # copy all askm tiles into a 'tiles' layer and
+    # move properties into a separate layer
     tmx.add_layer('tiles')
+    tmx.add_layer('properties')
     tiles_layer = tmx.layers['tiles']
+    properties_layer = tmx.layers['properties']
     for position, tile in askm.tiles.items():
+        x, y = reversed(position)
+
         tile_gid = tiles_tileset[tile[0]]
-        tiles_layer[reversed(position)] = tile_gid
+        tiles_layer[x, y] = tile_gid
+
+        property_gid = properties_tileset[property_map[tile[1]]]
+        properties_layer[x, y] = property_gid
 
     # copy all askm items into a 'items' layer
     tmx.add_layer('items')
