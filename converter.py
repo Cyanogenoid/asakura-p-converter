@@ -191,21 +191,15 @@ def askm_to_tmx(askm, resource_path=''):
     return tmx
 
 
-def generate_tsx(image_path, name, destination=None, default_terrain=True):
+def make_tileset(name, tile_size=(32,32), image_path):
     image = tmxlib.image.open(image_path)
-    tileset = tmxlib.ImageTileset(name=name, tile_size=(32, 32), image=image)
-    if destination is None:
-        destination = name + '.tsx'
+    tileset = tmxlib.ImageTileset(name=name, tile_size=tile_size, image=image)
 
-    if default_terrain:
-        tileset.terrains = tmxlib.terrain.TerrainList()
-        for i in range(4):
-            terrain = tmxlib.terrain.Terrain('solid_%s' % str(i),
-                                             tileset[17 + 40 * i])
-            # TODO: Add the terrain tiles
-            tileset.terrains.append(terrain)
+    return tileset
 
-    tileset.save(destination)
+
+def apply_terrain(tileset, terrain):
+    pass
 
 
 parser = argparse.ArgumentParser(description='Convert Asakura! P .map files'
