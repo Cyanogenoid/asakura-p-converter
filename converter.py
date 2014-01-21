@@ -1,6 +1,8 @@
 import argparse
+import os.path
 import struct
 from collections import namedtuple, defaultdict
+from functools import partial
 
 import tmxlib
 
@@ -125,22 +127,27 @@ def parse_askm(fd):
                        jump_reduction, inertia)
 
 
-def askm_to_tmx(askm):
+def askm_to_tmx(askm, resource_path=''):
     # load template tmx
     tmx = tmxlib.Map(size=(78, 48), tile_size=(32, 32))
 
+    resource_path_gen = partial(os.path.join, resource_path)
+
     # load tile tileset
-    tiles_tileset_path = askm.tileset_name.replace('.png', '.tsx')
+    tiles_tileset_path = resource_path_gen(
+                            askm.tileset_name.replace('.png', '.tsx')
+                         )
+    print(tiles_tileset_path)
     tiles_tileset = tmxlib.tileset.ImageTileset.open(tiles_tileset_path)
 
     # load properties tileset
-    properties_tileset_path = tiles_tileset_path
+    properties_tileset_path = resource_path_gen(tiles_tileset_path)
     properties_tileset = tmxlib.tileset.ImageTileset.open(
                              properties_tileset_path
                          )
 
     # load items tileset
-    items_tileset_path = 'pat_item.tsx'  # TODO: Make this more sensible
+    items_tileset_path = resource_path_gen('pat_item.tsx')
     items_tileset = tmxlib.tileset.ImageTileset.open(items_tileset_path)
 
     # create new tmx tileset list
@@ -205,8 +212,9 @@ parser = argparse.ArgumentParser(description='Convert Asakura! P .map files'
                                              'to and from Tiled .tmx files')
 parser.add_argument('input_path', help='path where the input map is located')
 parser.add_argument('output_path', help='path where the output will be saved')
+parser.add_argument('-r', '--resource', help='path where resources are located')
 args = parser.parse_args()
 
 askm = load_askm(args.input_path)
-tmx = askm_to_tmx(askm)
+tmx = askm_to_tmx(askm, resource_path=args.resource)
 tmx.save(args.output_path)
