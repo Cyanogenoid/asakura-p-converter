@@ -134,20 +134,16 @@ def askm_to_tmx(askm, resource_path=''):
     resource_path_gen = partial(os.path.join, resource_path)
 
     # load tile tileset
-    tiles_tileset_path = resource_path_gen(
-                            askm.tileset_name.replace('.png', '.tsx')
-                         )
-    tiles_tileset = tmxlib.tileset.ImageTileset.open(tiles_tileset_path)
+    tiles_tileset_path = resource_path_gen(askm.tileset_name)
+    tiles_tileset = make_tileset('tiles', tiles_tileset_path)
 
     # load properties tileset
     properties_tileset_path = resource_path_gen(tiles_tileset_path)
-    properties_tileset = tmxlib.tileset.ImageTileset.open(
-                             properties_tileset_path
-                         )
+    properties_tileset = make_tileset('properties', properties_tileset_path)
 
     # load items tileset
-    items_tileset_path = resource_path_gen('pat_item.tsx')
-    items_tileset = tmxlib.tileset.ImageTileset.open(items_tileset_path)
+    items_tileset_path = resource_path_gen('pat_item.png')
+    items_tileset = make_tileset('items', items_tileset_path)
 
     # create new tmx tileset list
     tmx.tilesets = tmxlib.tileset.TilesetList(tmx)
